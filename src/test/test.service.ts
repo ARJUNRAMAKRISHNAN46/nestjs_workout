@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTestDto } from './dto/create-test.dto';
 import { UpdateTestDto } from './dto/update-test.dto';
 import { strict } from 'assert';
@@ -38,13 +38,17 @@ export class TestService {
   }
 
   updateTest(id: number, UpdateTestDto: UpdateTestDto) {
-    this.tests = this.tests.map((test) => {
-      if (test.id === id) {
-        return { ...test, ...UpdateTestDto };
-      }
-      return test;
-    });
-    return this.getTest(id);
+    try {
+        this.tests = this.tests.map((test) => {
+            if (test.id === id) {
+              return { ...test, ...UpdateTestDto };
+            }
+            return test;
+          });
+          return this.getTest(id);
+    } catch (error) {
+        throw new NotFoundException();
+    }
   }
 
   removeTest(id: number) {
